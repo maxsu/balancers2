@@ -9,17 +9,17 @@ using namespace std;
 #include "utils.cpp"
 
 // Find the ratios given by a certain splitter network (as a double)
-vector<vector<double>> outputRatios(vector<Node*> nodes, int num_inputs,
-                                    int num_splitters, int num_outputs) {
+Flow outputRatios(Network nodes, int num_inputs, int num_splitters,
+                  int num_outputs) {
   // Construct the vector of ratios, which will hold what each splitter outputs
   // in terms of the outputs of the others The [i][j] entry is the amount of
   // node i's output depends on node j's output Eventually, we want to reduce
   // everything to dependencies on the inputs Initially, this will just be the
   // trivial "this splitter outputs what it outputs" vector
-  vector<vector<double>> flow;
+  Flow flow;
 
   for (int i = 0; i < num_inputs + num_splitters + num_outputs; ++i) {
-    vector<double> temp;
+    Row temp;
     for (int j = 0; j < num_inputs + num_splitters + num_outputs; ++j) {
       if (i == j) {
         temp.push_back(1);
@@ -33,7 +33,7 @@ vector<vector<double>> outputRatios(vector<Node*> nodes, int num_inputs,
 
   // Solve the nodes, starting at the splitters, in terms of others one by one
   for (int i = num_inputs; i < num_inputs + num_splitters + num_outputs; ++i) {
-    vector<double> new_flow;
+    Row new_flow;
     for (int j = 0; j < num_inputs + num_splitters + num_outputs; ++j) {
       new_flow.push_back(0);
     }
@@ -152,35 +152,34 @@ int main() {
   s6->outputs.push_back(s15);
   s5->outputs.push_back(s16);
 
-  vector<vector<double>> flow =
-      outputRatios({s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13,
-                    s14, s15, s16},
-                   1, 12, 4);
+  Flow flow = outputRatios({s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11,
+                            s12, s13, s14, s15, s16},
+                           1, 12, 4);
 
   log("Done!");
 
   // Improvised testS!
-  vector<double> expected_ratios = {1,
-                                    0.75641024112701416,
-                                    0.5128205418586731,
-                                    0.50549453496932983,
-                                    0.25641027092933655,
-                                    0.26923078298568726,
-                                    0.12820513546466827,
-                                    0.25274726748466492,
-                                    0.31684982776641846,
-                                    0.25457876920700073,
-                                    0.12637363374233246,
-                                    0.22161172330379486,
-                                    0.380952388048172,
-                                    0.380952388048172,
-                                    0.22161172330379486,
-                                    0.12820513546466827,
-                                    0.26923078298568726};
+  Row expected_ratios = {1,
+                         0.75641024112701416,
+                         0.5128205418586731,
+                         0.50549453496932983,
+                         0.25641027092933655,
+                         0.26923078298568726,
+                         0.12820513546466827,
+                         0.25274726748466492,
+                         0.31684982776641846,
+                         0.25457876920700073,
+                         0.12637363374233246,
+                         0.22161172330379486,
+                         0.380952388048172,
+                         0.380952388048172,
+                         0.22161172330379486,
+                         0.12820513546466827,
+                         0.26923078298568726};
 
   // Collect significant output
-  vector<double> final_ratios;
-  for (vector<double> row : flow) {
+  Row final_ratios;
+  for (Row row : flow) {
     float ratio = row[0];
     final_ratios.push_back(ratio);
   }
