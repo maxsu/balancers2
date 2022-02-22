@@ -6,6 +6,7 @@
 using namespace std;
 
 #include "types.h"
+#include "utils.cpp"
 
 // Find the ratios given by a certain splitter network (as a double)
 vector<vector<double>> outputRatios(vector<Node*> nodes, int num_inputs,
@@ -156,6 +157,43 @@ int main() {
                     s14, s15, s16},
                    1, 12, 4);
 
-  cout << "done"
-       << "\n";
+  log("Done!");
+
+  // Improvised testS!
+  vector<double> expected_ratios = {1,
+                                    0.75641024112701416,
+                                    0.5128205418586731,
+                                    0.50549453496932983,
+                                    0.25641027092933655,
+                                    0.26923078298568726,
+                                    0.12820513546466827,
+                                    0.25274726748466492,
+                                    0.31684982776641846,
+                                    0.25457876920700073,
+                                    0.12637363374233246,
+                                    0.22161172330379486,
+                                    0.380952388048172,
+                                    0.380952388048172,
+                                    0.22161172330379486,
+                                    0.12820513546466827,
+                                    0.26923078298568726};
+
+  // Collect significant output
+  vector<double> final_ratios;
+  for (vector<double> row : flow) {
+    float ratio = row[0];
+    final_ratios.push_back(ratio);
+  }
+
+  // Report
+  log("Results:");
+  log(final_ratios);
+
+  if (final_ratios == expected_ratios) {
+    log("Results are valid!");
+  } else {
+    log("Failed results test.");
+    log("Expected:");
+    log(expected_ratios);
+  }
 }
