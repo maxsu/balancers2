@@ -5,10 +5,7 @@
 #include <vector>
 using namespace std;
 
-struct Node {
-  vector<Node*> inputs;
-  vector<Node*> outputs;
-};
+#include "types.h"
 
 // Find the ratios given by a certain splitter network (as a double)
 vector<vector<double>> outputRatios(vector<Node*> nodes, int num_inputs,
