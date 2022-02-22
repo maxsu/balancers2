@@ -36,8 +36,9 @@ Flow outputRatios(Network nodes, int inputs, int splitters, int outputs) {
 
   // Solve the nodes, starting at the splitters, in terms of others one by one
   for (int i = inputs; i < network_size; ++i) {
-    int node_inputs = nodes[i]->inputs.size();
-    int node_outputs = nodes[i]->outputs.size();
+    Node* current_node = nodes[i];
+    int node_inputs = current_node->inputs.size();
+    int node_outputs = current_node->outputs.size();
     bool node_has_outputs = node_outputs > 0;
 
     // Generate an empty row
@@ -47,11 +48,11 @@ Flow outputRatios(Network nodes, int inputs, int splitters, int outputs) {
     }
 
     // Iterate through node's inputs
-    for (int j = 0; j < node_inputs; ++j) {
+    for (Node* input_node : current_node->inputs) {
       // Find which node this one is
       int node_num;
       for (int k = 0; k < network_size; ++k) {
-        if (nodes[k] == nodes[i]->inputs[j]) {
+        if (nodes[k] == input_node) {
           node_num = k;
         }
       }
