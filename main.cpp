@@ -1,9 +1,6 @@
 //
 //  main.cpp
 //  beltbalancers2
-//
-//  Created by Kyle Hess on 2/19/22.
-//
 
 // TODO:
 //     - Make throughput-limitedness
