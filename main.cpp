@@ -5,6 +5,7 @@
 #include <vector>
 using namespace std;
 
+#include "network_tools.cpp"
 #include "test_cases.cpp"
 #include "types.h"
 #include "utils.cpp"
@@ -19,43 +20,22 @@ Flow outputRatios(Network nodes, int inputs, int splitters, int outputs) {
 
   int network_size = inputs + splitters + outputs;
 
-  // Generate an identity flow
-  Flow flow;
-  for (int i = 0; i < network_size; ++i) {
-    Row temp;
-    for (int j = 0; j < network_size; ++j) {
-      if (i == j) {
-        temp.push_back(1);
-      } else {
-        temp.push_back(0);
-      }
-    }
-
-    flow.push_back(temp);
-  }
+  Flow flow = identityFlow(network_size);
 
   // Solve the nodes, starting at the splitters, in terms of others one by one
   for (int i = inputs; i < network_size; ++i) {
     Node* current_node = nodes[i];
+
     int node_inputs = current_node->inputs.size();
     int node_outputs = current_node->outputs.size();
     bool node_has_outputs = node_outputs > 0;
 
-    // Generate an empty row
-    Row new_row;
-    for (int j = 0; j < network_size; ++j) {
-      new_row.push_back(0);
-    }
+    Row new_row = zeroRow(network_size);
 
     // Iterate through node's inputs
-    for (Node* input_node : current_node->inputs) {
+    for (auto input_node : current_node->inputs) {
       // Find which node this one is
-      int node_num;
-      for (int k = 0; k < network_size; ++k) {
-        if (nodes[k] == input_node) {
-          node_num = k;
-        }
-      }
+      int node_num = nodeNum(nodes, input_node);
 
       for (int k = 0; k < network_size; ++k) {
         // Check if this is an output node; if so, then don't divide output by
@@ -70,9 +50,7 @@ Flow outputRatios(Network nodes, int inputs, int splitters, int outputs) {
 
     // Update self-dependencies on this splitter
     double multiplier = 1 / (1 - new_row[i]);
-    for (int k = 0; k < network_size; ++k) {
-      new_row[k] *= multiplier;
-    }
+    new_row = rowMultiply(new_row, multiplier);
     new_row[i] = 0;
 
     // Update flow
@@ -103,7 +81,7 @@ int main() {
 
   // Collect significant output
   Row final_ratios;
-  for (Row row : flow) {
+  for (auto row : flow) {
     float ratio = row[0];
     final_ratios.push_back(ratio);
   }
