@@ -1,9 +1,5 @@
-//
 //  main.cpp
 //  beltbalancers2
-
-// TODO:
-//     - Make throughput-limitedness
 
 #include <iostream>
 #include <vector>
@@ -166,40 +162,3 @@ int main() {
   cout << "done"
        << "\n";
 }
-
-/*
- Node* s1 = new Node;
- Node* s2 = new Node;
- Node* s3 = new Node;
- Node* s4 = new Node;
- Node* s5 = new Node;
- Node* s6 = new Node;
- Node* s7 = new Node;
- Node* s8 = new Node;
- Node* s9 = new Node;
-
- // inputs
- s3->inputs.push_back(s1);
- s3->inputs.push_back(s2);
- s4->inputs.push_back(s5);
- s5->inputs.push_back(s4);
- s5->inputs.push_back(s3);
- s6->inputs.push_back(s4);
- s6->inputs.push_back(s3);
- s7->inputs.push_back(s5);
- s8->inputs.push_back(s6);
- s9->inputs.push_back(s6);
-
- // outputs
- s1->outputs.push_back(s3);
- s2->outputs.push_back(s3);
- s5->outputs.push_back(s4);
- s4->outputs.push_back(s5);
- s3->outputs.push_back(s5);
- s4->outputs.push_back(s6);
- s3->outputs.push_back(s6);
- s5->outputs.push_back(s7);
- s6->outputs.push_back(s8);
- s6->outputs.push_back(s9);
-
- */
