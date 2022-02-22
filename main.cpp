@@ -10,18 +10,20 @@ using namespace std;
 #include "utils.cpp"
 
 // Find the ratios given by a certain splitter network (as a double)
-Flow outputRatios(Network nodes, int num_inputs, int num_splitters,
-                  int num_outputs) {
+Flow outputRatios(Network nodes, int inputs, int splitters, int outputs) {
   // Construct the vector of ratios, which will hold what each splitter outputs
   // in terms of the outputs of the others The [i][j] entry is the amount of
   // node i's output depends on node j's output Eventually, we want to reduce
   // everything to dependencies on the inputs Initially, this will just be the
   // trivial "this splitter outputs what it outputs" vector
-  Flow flow;
 
-  for (int i = 0; i < num_inputs + num_splitters + num_outputs; ++i) {
+  int network_size = inputs + splitters + outputs;
+
+  // Generate an identity flow
+  Flow flow;
+  for (int i = 0; i < network_size; ++i) {
     Row temp;
-    for (int j = 0; j < num_inputs + num_splitters + num_outputs; ++j) {
+    for (int j = 0; j < network_size; ++j) {
       if (i == j) {
         temp.push_back(1);
       } else {
@@ -33,46 +35,51 @@ Flow outputRatios(Network nodes, int num_inputs, int num_splitters,
   }
 
   // Solve the nodes, starting at the splitters, in terms of others one by one
-  for (int i = num_inputs; i < num_inputs + num_splitters + num_outputs; ++i) {
-    Row new_flow;
-    for (int j = 0; j < num_inputs + num_splitters + num_outputs; ++j) {
-      new_flow.push_back(0);
+  for (int i = inputs; i < network_size; ++i) {
+    int node_inputs = nodes[i]->inputs.size();
+    int node_outputs = nodes[i]->outputs.size();
+    bool node_has_outputs = node_outputs > 0;
+
+    // Generate an empty row
+    Row new_row;
+    for (int j = 0; j < network_size; ++j) {
+      new_row.push_back(0);
     }
 
-    for (int j = 0; j < nodes[i]->inputs.size(); ++j) {
+    // Iterate through node's inputs
+    for (int j = 0; j < node_inputs; ++j) {
       // Find which node this one is
       int node_num;
-      for (int k = 0; k < num_inputs + num_splitters + num_outputs; ++k) {
+      for (int k = 0; k < network_size; ++k) {
         if (nodes[k] == nodes[i]->inputs[j]) {
           node_num = k;
         }
       }
 
-      for (int k = 0; k < num_inputs + num_splitters + num_outputs; ++k) {
+      for (int k = 0; k < network_size; ++k) {
         // Check if this is an output node; if so, then don't divide output by
         // the number of belts coming out
-        if (i < num_inputs + num_splitters) {
-          new_flow[k] += flow[node_num][k] / nodes[i]->outputs.size();
+        if (node_has_outputs) {
+          new_row[k] += flow[node_num][k] / node_outputs;
         } else {
-          new_flow[k] += flow[node_num][k];
+          new_row[k] += flow[node_num][k];
         }
       }
     }
 
     // Update self-dependencies on this splitter
-    double multiplier = 1 / (1 - new_flow[i]);
-    for (int k = 0; k < num_inputs + num_splitters + num_outputs; ++k) {
-      new_flow[k] *= multiplier;
+    double multiplier = 1 / (1 - new_row[i]);
+    for (int k = 0; k < network_size; ++k) {
+      new_row[k] *= multiplier;
     }
-    new_flow[i] = 0;
+    new_row[i] = 0;
 
-    for (int j = 0; j < num_inputs + num_splitters + num_outputs; ++j) {
-      flow[i][j] = new_flow[j];
-    }
+    // Update flow
+    flow[i] = new_row;
 
     // Update any other splitters with this one as its flow
-    for (int j = 0; j < num_inputs + num_splitters + num_outputs; ++j) {
-      for (int k = 0; k < num_inputs + num_splitters + num_outputs; ++k) {
+    for (int j = 0; j < network_size; ++j) {
+      for (int k = 0; k < network_size; ++k) {
         flow[j][k] += flow[j][i] * flow[i][k];
       }
       flow[j][i] = 0;
