@@ -5,10 +5,10 @@
 #include <vector>
 using namespace std;
 
-#include "network_tools.cpp"
-#include "test_cases.cpp"
+#include "network_tools.h"
+#include "test_cases.h"
 #include "types.h"
-#include "utils.cpp"
+#include "utils.h"
 
 // Find the ratios given by a certain splitter network (as a double)
 Flow outputRatios(Network nodes, int inputs, int splitters, int outputs) {

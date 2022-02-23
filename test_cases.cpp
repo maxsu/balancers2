@@ -1,33 +1,8 @@
+// test_cases.cpp
+// Test cases of networks and their flow ratios
+#include "network_tools.h"
 #include "types.h"
 
-struct TestNet {
-  Network network;
-  Row ratios;
-};
-
-// Test case utility functions
-
-// Generate an empty network
-Network emptyNetwork(int size) {
-  Network nodes;
-  for (int i = 0; i < size; ++i) {
-    Node* node = new Node;
-    nodes.push_back(node);
-  }
-  return nodes;
-}
-
-// Link two nodes in a network
-void link(Network& nodes, int source, int target) {
-  Node* target_node = nodes[target];
-  Node* source_node = nodes[source];
-  source_node->outputs.push_back(target_node);
-  target_node->inputs.push_back(source_node);
-}
-
-// Test cases
-
-// Set up a 17 node test network
 TestNet testnet_A() {
   Network nodes = emptyNetwork(17);
 
@@ -80,7 +55,6 @@ TestNet testnet_A() {
   return A;
 }
 
-// Set up a 8 node test network
 TestNet testnet_B() {
   Network nodes = emptyNetwork(8);
 
