@@ -33,7 +33,15 @@ Flow identityFlow(int size) {
   return identity_flow;
 }
 
-// Generate an empty network
+Row getColumn(Flow flow, int column_position) {
+  vectorGuard(flow, column_position);
+  Row column;
+  for (Row row : flow) {
+    column.push_back(row[column_position]);
+  }
+  return column;
+}
+
 Network emptyNetwork(int size) {
   Network nodes;
   for (int i = 0; i < size; ++i) {

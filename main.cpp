@@ -70,20 +70,11 @@ Flow outputRatios(Network nodes, int inputs, int splitters, int outputs) {
 
 int main() {
   TestNet testnet = testnet_A();  // 17 node testcase
+
   Flow flow = outputRatios(testnet.network, 1, 12, 4);
+  Row final_ratios = getColumn(flow, 0);
 
   log("Done!");
-
-  // Improvised tests!
-
-  // Collect significant output
-  Row final_ratios;
-  for (auto row : flow) {
-    double ratio = row[0];
-    final_ratios.push_back(ratio);
-  }
-
-  // Report
   log("Results:");
   log(final_ratios);
 
