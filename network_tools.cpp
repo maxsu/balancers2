@@ -1,6 +1,7 @@
 // network_tools.cpp
 // Tools for the Network/Flow domain
 #include "types.h"
+#include "utils.h"
 
 Row zeroRow(int size) {
   Row zero_row;
@@ -12,6 +13,7 @@ Row zeroRow(int size) {
 
 Row oneRow(int size, int one_position) {
   Row one_row = zeroRow(size);
+  vectorGuard(one_row, one_position);
   one_row[one_position] = 1;
   return one_row;
 }
@@ -41,8 +43,9 @@ Network emptyNetwork(int size) {
   return nodes;
 }
 
-// Link two nodes in a network
 void link(Network& nodes, int source, int target) {
+  vectorGuard(nodes, source);
+  vectorGuard(nodes, target);
   Node* target_node = nodes[target];
   Node* source_node = nodes[source];
   source_node->outputs.push_back(target_node);
@@ -50,11 +53,10 @@ void link(Network& nodes, int source, int target) {
 }
 
 int nodeNum(Network nodes, Node* node) {
-  int node_num;
-  for (int k = 0; k < nodes.size(); ++k) {
-    if (nodes[k] == node) {
-      node_num = k;
+  for (int node_num = 0; node_num < nodes.size(); ++node_num) {
+    if (node == nodes[node_num]) {
+      return node_num;
     }
   }
-  return node_num;
+  throw "Node not found";
 }
