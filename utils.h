@@ -8,3 +8,7 @@ void log(string message);
 
 // Log a vector<double> to console
 void log(vector<double> row);
+
+// Throw exception if index is out of bounds of vector
+template <class T>
+void vectorGuard(vector<T> v, int index);

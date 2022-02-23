@@ -19,3 +19,10 @@ void log(vector<double> row) {
   cout << "}"
        << "\n\n";
 }
+
+template <class T>
+void vectorGuard(vector<T> v, int index) {
+  if (index < 0 || index > v.size()) {
+    throw "Index out of bounds";
+  }
+}
