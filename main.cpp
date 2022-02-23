@@ -69,10 +69,7 @@ Flow outputRatios(Network nodes, int inputs, int splitters, int outputs) {
 }
 
 int main() {
-  // Load testcase
-  TestNet testnet = testnet_A();
-
-  // Compute ratios
+  TestNet testnet = testnet_A();  // 17 node testcase
   Flow flow = outputRatios(testnet.network, 1, 12, 4);
 
   log("Done!");
@@ -82,7 +79,7 @@ int main() {
   // Collect significant output
   Row final_ratios;
   for (auto row : flow) {
-    float ratio = row[0];
+    double ratio = row[0];
     final_ratios.push_back(ratio);
   }
 
