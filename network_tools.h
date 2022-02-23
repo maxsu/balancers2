@@ -9,6 +9,9 @@ Row zeroRow(int size);
 // Generate a row with a single 1 entry
 Row oneRow(int size, int one_position);
 
+// Add two rows together
+Row rowAdd(Row new_row, Row input_node_row);
+
 // Multiply a row by a double
 Row rowMultiply(Row row, double multiplier);
 

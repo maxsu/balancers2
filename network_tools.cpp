@@ -18,6 +18,16 @@ Row oneRow(int size, int one_position) {
   return one_row;
 }
 
+Row rowAdd(Row A, Row B) {
+  if (A.size() != B.size()) {
+    throw "Row sizes mismatch";
+  }
+  for (int i; i < A.size(); i++) {
+    A[i] += B[i];
+  }
+  return A;
+}
+
 Row rowMultiply(Row row, double multiplier) {
   for (int i = 0; i < row.size(); ++i) {
     row[i] *= multiplier;
