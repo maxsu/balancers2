@@ -22,10 +22,12 @@ Row rowAdd(Row A, Row B) {
   if (A.size() != B.size()) {
     throw "Row sizes mismatch";
   }
-  for (int i; i < A.size(); i++) {
-    A[i] += B[i];
+
+  Row C = zeroRow(A.size());
+  for (int i = 0; i < A.size(); i++) {
+    C[i] = A[i] + B[i];
   }
-  return A;
+  return C;
 }
 
 Row rowMultiply(Row row, double multiplier) {

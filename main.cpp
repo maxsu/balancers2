@@ -1,6 +1,7 @@
 //  main.cpp
 //  beltbalancers2
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -22,47 +23,38 @@ Flow outputRatios(Network nodes, int inputs, int splitters, int outputs) {
 
   Flow flow = identityFlow(network_size);
 
-  // Solve the nodes, starting at the splitters, in terms of others one by one
+  // Solve the nodes in terms of others
   for (int i = inputs; i < network_size; ++i) {
     Node* current_node = nodes[i];
-
-    int node_inputs = current_node->inputs.size();
     int node_outputs = current_node->outputs.size();
-    bool node_has_outputs = node_outputs > 0;
 
+    // Sum input node rows
     Row new_row = zeroRow(network_size);
-
-    // Iterate through node's inputs
     for (auto input_node : current_node->inputs) {
-      // Find which node this one is
-      int node_num = nodeNum(nodes, input_node);
-
-      for (int k = 0; k < network_size; ++k) {
-        // Check if this is an output node; if so, then don't divide output by
-        // the number of belts coming out
-        if (node_has_outputs) {
-          new_row[k] += flow[node_num][k] / node_outputs;
-        } else {
-          new_row[k] += flow[node_num][k];
-        }
-      }
+      Row input_row = flow[nodeNum(nodes, input_node)];
+      new_row = rowAdd(new_row, input_row);
     }
 
-    // Update self-dependencies on this splitter
-    double multiplier = 1 / (1 - new_row[i]);
-    new_row = rowMultiply(new_row, multiplier);
+    // Divide by number of belt outputs, if any
+    double belt_normalizer = 1.0 / max(node_outputs, 1);
+    new_row = rowMultiply(new_row, belt_normalizer);
+
+    // Update self-dependencies on this node
+    double self_flow = 1 / (1 - new_row[i]);
+    new_row = rowMultiply(new_row, self_flow);
     new_row[i] = 0;
+
+    // Update other nodes that flow to this one
+    for (int j = 0; j < network_size; ++j) {
+      // backflow is the share of i's flow that comes from j???
+      double backflow = flow[j][i];
+      flow[j] = rowAdd(flow[j], rowMultiply(new_row, backflow));
+      // clear back-pressure
+      flow[j][i] = 0;
+    }
 
     // Update flow
     flow[i] = new_row;
-
-    // Update any other splitters with this one as its flow
-    for (int j = 0; j < network_size; ++j) {
-      for (int k = 0; k < network_size; ++k) {
-        flow[j][k] += flow[j][i] * flow[i][k];
-      }
-      flow[j][i] = 0;
-    }
   }
 
   return flow;
