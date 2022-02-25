@@ -1,6 +1,7 @@
-// types.h
+// balancers2/types.h
 // Datatypes and aliases
 #pragma once
+#include <string>
 #include <vector>
 using namespace std;
 
@@ -14,6 +15,7 @@ using Flow = vector<Row>;
 using Network = vector<Node *>;
 
 struct TestNet {
+  string name;
   Network network;
   Row ratios;
 };

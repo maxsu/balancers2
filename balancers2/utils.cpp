@@ -1,4 +1,4 @@
-// utils.cpp
+// balancers2/utils.cpp
 // Utilities in the system or miscellaneous domain (like logging)
 #include <iostream>
 #include <limits>
@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void log(string message) { cout << message << "\n\n"; }
+void log(string message) { cout << message << "\n"; }
 
 void log(vector<double> row) {
   // log numbers with full precision, usually 17 digits
@@ -17,7 +17,7 @@ void log(vector<double> row) {
     cout << val << ", ";
   }
   cout << "}"
-       << "\n\n";
+       << "\n";
 }
 
 template <class T>
