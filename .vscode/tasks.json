@@ -1,0 +1,70 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "clang++-14: build active file",
+			"command": "/usr/bin/clang++-14",
+			"args": [
+				"-g",
+				"${file}",
+				"-o",
+				"${fileDirname}/${fileBasenameNoExtension}"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": "$gcc",
+			"group": "build"
+		},
+		{
+			"type": "cppbuild",
+			"label": "Build Test",
+			"command": "/usr/bin/clang++-14",
+			"args": [
+				"-g",
+				"main.cpp",
+				"-o",
+				"main"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": "$gcc",
+			"group": "build",
+		},
+		{
+			"type": "shell",
+			"label": "Run Test",
+			"command": "./main",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": "build",
+		},
+		{
+			"type": "shell",
+			"label": "Clean Binaries",
+			"command": "/usr/bin/rm",
+			"args": [
+				"-f",
+				"main"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "Test",
+			"group": "test",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"Clean Binaries",
+				"Build Test",
+				"Run Test"
+			]
+		}
+	]
+}
