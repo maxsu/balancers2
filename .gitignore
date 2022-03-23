@@ -1,2 +1,5 @@
 # compiled output
-main
+bin/
+
+# OS files
+.DS_Store
