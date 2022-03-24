@@ -10,26 +10,6 @@
 using namespace std;
 
 
-Matrix transpose(Matrix matrix) {
-    Matrix new_matrix;
-
-    if (matrix.size() == 0) {
-        return matrix;
-    }
-
-    for (int i = 0; i < matrix[0].size(); ++i) {
-        Row temp;
-
-        for (int j = 0; j < matrix.size(); ++j) {
-            temp.push_back(matrix[j][i]);
-        }
-
-        new_matrix.push_back(temp);
-    }
-
-    return new_matrix;
-}
-
 Matrix addSplitter(Matrix network, vector<int> splitter_inputs, vector<int> splitter_outputs) {
     Row splitter_flow = zeroRow(network[0].size());
     

@@ -46,12 +46,32 @@ Matrix identityMatrix(int size) {
 }
 
 Row getColumn(Matrix matrix, int column_position) {
-  vectorGuard(matrix, column_position);
+  vectorGuard(matrix[0], column_position);
   Row column;
-  for (Row row : matrix) {
-    column.push_back(row[column_position]);
+  int m = matrix.size();
+  for (int j = 0; j < m; j++) {
+    column.push_back(matrix[j][column_position]);
   }
   return column;
+}
+
+Matrix transpose(Matrix matrix) {
+    Matrix transpose_matrix;
+    
+    int m = matrix.size();
+
+    if (m == 0) {
+        return matrix;
+    }
+    
+    int n = matrix[0].size();
+    
+    for (int i = 0; i < n; ++i) {
+        Row column = getColumn(matrix, i);
+        transpose_matrix.push_back(column);
+    }
+    
+    return transpose_matrix;
 }
 
 Network emptyNetwork(int size) {

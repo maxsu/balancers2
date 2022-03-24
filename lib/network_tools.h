@@ -21,6 +21,9 @@ Matrix identityMatrix(int size);
 // Extract a column from a matrix
 Row getColumn(Matrix matrix, int column_position);
 
+// Transpos a matrix
+Matrix transpose(Matrix matrix);
+
 // Generate an empty network
 Network emptyNetwork(int size);
 
