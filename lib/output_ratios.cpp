@@ -1,4 +1,3 @@
-// balancers2/output_ratios.cpp
 // compute the output of a splitter network
 
 #include <algorithm>

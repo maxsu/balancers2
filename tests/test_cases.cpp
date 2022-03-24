@@ -1,6 +1,6 @@
-// tests/test_cases.cpp
 // Test cases of networks and their flow ratios
-#include "../balancers2/network_tools.h"
+
+#include "../lib/network_tools.h"
 
 TestNet trivialLink() {
   Network nodes = emptyNetwork(2);

@@ -1,7 +1,6 @@
-// main.cpp
-// beltbalancers2
+// Test runner for output_ratios
 
-#include "balancers2/output_ratios.h"
+#include "lib/output_ratios.h"
 #include "tests/test_cases.h"
 #include "tests/test_utils.h"
 

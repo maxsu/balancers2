@@ -1,5 +1,5 @@
-// balancers2/exists_balancer.h
 // compute the output of a splitter network
+
 #pragma once
 #include "exists_balancer.cpp"
 

@@ -1,5 +1,5 @@
-// balancers2/types.h
 // Datatypes and aliases
+
 #pragma once
 #include <string>
 #include <vector>

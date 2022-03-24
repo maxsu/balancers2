@@ -1,4 +1,3 @@
-// balancers2/exists_balancer.cpp
 // Computes the list of all flows possible with a certain number of splitters
 
 #include <set>

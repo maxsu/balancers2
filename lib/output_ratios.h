@@ -1,5 +1,5 @@
-// balancers2/output_ratios.h
 // compute the output of a splitter network
+
 #pragma once
 #include "output_ratios.cpp"
 
