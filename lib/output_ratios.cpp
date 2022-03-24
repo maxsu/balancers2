@@ -1,4 +1,3 @@
-// balancers2/output_ratios.cpp
 // compute the output of a splitter network
 
 #include <algorithm>
@@ -6,10 +5,10 @@
 #include "network_tools.h"
 #include "types.h"
 
-Flow outputRatios(Network nodes) {
+Matrix outputRatios(Network nodes) {
   int network_size = nodes.size();
 
-  Flow flow = identityFlow(network_size);
+  Matrix flow = identityMatrix(network_size);
 
   // Solve the nodes in terms of others
   for (int i = 0; i < network_size; ++i) {

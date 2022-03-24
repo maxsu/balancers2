@@ -1,5 +1,5 @@
-// balancers2/output_ratios.h
 // compute the output of a splitter network
+
 #pragma once
 #include "output_ratios.cpp"
 
@@ -9,4 +9,4 @@
 // node i's output that depends  on node j's output. Eventually, we want to
 // reduce everything to dependencies on the inputs. Initially, this will just be
 // the trivial "this splitter outputs what it outputs" vector.
-Flow outputRatios(Network nodes, int inputs, int splitters, int outputs);
+Matrix outputRatios(Network nodes, int inputs, int splitters, int outputs);

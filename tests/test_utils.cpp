@@ -1,13 +1,12 @@
-// tests/test_utils
 // Tools to run and report tests
 
 #include <string>
 
-#include "../balancers2/output_ratios.h"
-#include "../balancers2/utils.h"
+#include "../lib/output_ratios.h"
+#include "../lib/utils.h"
 
 void test_outputRatio_first_column(TestNet testnet) {
-  Flow flow = outputRatios(testnet.network);
+  Matrix flow = outputRatios(testnet.network);
   Row ratios = getColumn(flow, 0);
   bool test_passed = ratios == testnet.ratios;
 
