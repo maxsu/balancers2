@@ -1,5 +1,6 @@
 // Computes the list of all flows possible with a certain number of splitters
 
+#include <algorithm>
 #include <set>
 #include <vector>
 using namespace std;

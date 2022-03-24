@@ -9,7 +9,14 @@ int main() {
     
     //vector<vector<double>> new_network = addSplitter(my_network, {0}, {1, -1});
     
-    bool balancerExists = existsBalancer(5, 5, 6);
+    // bool balancerExists = existsBalancer(5, 5, 6);
+    bool balancerExists = existsBalancer(4, 4, 4);
+
+    if (balancerExists) {
+        cout << "Balancer Exists!";
+    } else {
+        cout << "Balancer does not exist!";
+    }
     
     cout << "\n";
 }
