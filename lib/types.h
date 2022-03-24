@@ -11,7 +11,7 @@ struct Node {
 };
 
 using Row = vector<double>;
-using Flow = vector<Row>;
+using Matrix = vector<Row>;
 using Network = vector<Node *>;
 
 struct TestNet {

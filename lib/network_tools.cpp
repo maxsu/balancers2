@@ -1,4 +1,4 @@
-// Tools for the Network/Flow domain
+// Tools for the Network/Matrix domain
 
 #include "types.h"
 #include "utils.h"
@@ -37,18 +37,18 @@ Row rowMultiply(Row row, double multiplier) {
   return row;
 }
 
-Flow identityFlow(int size) {
-  Flow identity_flow;
+Matrix identityMatrix(int size) {
+  Matrix identity_matrix;
   for (int i = 0; i < size; ++i) {
-    identity_flow.push_back(oneRow(size, i));
+    identity_matrix.push_back(oneRow(size, i));
   }
-  return identity_flow;
+  return identity_matrix;
 }
 
-Row getColumn(Flow flow, int column_position) {
-  vectorGuard(flow, column_position);
+Row getColumn(Matrix matrix, int column_position) {
+  vectorGuard(matrix, column_position);
   Row column;
-  for (Row row : flow) {
+  for (Row row : matrix) {
     column.push_back(row[column_position]);
   }
   return column;

@@ -1,4 +1,4 @@
-// Tools for the Network/Flow domain
+// Tools for the Network/Matrix domain
 
 #pragma once
 #include "network_tools.cpp"
@@ -15,11 +15,11 @@ Row rowAdd(Row new_row, Row input_node_row);
 // Multiply a row by a double
 Row rowMultiply(Row row, double multiplier);
 
-// Generate an identity matrix flow
-Flow identityFlow(int size);
+// Generate an identity matrix matrix
+Matrix identityMatrix(int size);
 
-// Extract a column from a flow
-Row getColumn(Flow flow, int column_position);
+// Extract a column from a matrix
+Row getColumn(Matrix matrix, int column_position);
 
 // Generate an empty network
 Network emptyNetwork(int size);
