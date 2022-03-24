@@ -170,43 +170,6 @@ vector<vector<double>> addSplitter(vector<vector<double>> network, vector<int> s
         }
     }
     
-    /*
-    // Note: can't sort individually because we have a matrix, not a simple bunch of vectors
-    // Sort the network by putting the biggest entry in the upper left, sorting that first column, then sort the first row
-    double max_element = 0.0;
-    int max_row_ind = 0;
-    int max_col_ind = 0;
-    for (int i = 0; i < network.size(); ++i) {
-        for (int j = 0; j < network[i].size(); ++j) {
-            if (network[i][j] > max_element) {
-                max_element = network[i][j];
-                max_row_ind = i;
-                max_col_ind = j;
-            }
-        }
-    }
-    // Now permute so that the max element is in the upper left corner
-    // Switch rows
-    vector<double> first_row = network[0];
-    vector<double> max_row = network[max_row_ind];
-    network[0] = max_row;
-    network[max_row_ind] = first_row;
-    // Switch columns
-    vector<double> first_col;
-    for (int i = 0; i < network[0].size(); ++i) {
-        first_col.push_back(network[0][i]);
-    }
-    vector<double> max_col;
-    for (int i = 0; i < network[max_col_ind].size(); ++i) {
-        max_col.push_back(network[max_col_ind][i]);
-    }
-    for (int i = 0; i < network[0].size(); ++i) {
-        network[0][i] = max_col[i];
-    }
-    for (int i = 0; i < network[0].size(); ++i) {
-        
-    }*/
-    
     return network;
 }
 
