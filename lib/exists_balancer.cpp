@@ -3,33 +3,36 @@
 #include <algorithm>
 #include <set>
 #include <vector>
+
+#include "types.h"
+#include "network_tools.h"
+
 using namespace std;
 
-vector<vector<double>> transpose(vector<vector<double>> matrix) {
-    vector<vector<double>> new_matrix;
-    
+
+Matrix transpose(Matrix matrix) {
+    Matrix new_matrix;
+
     if (matrix.size() == 0) {
         return matrix;
     }
-    
+
     for (int i = 0; i < matrix[0].size(); ++i) {
-        vector<double> temp;
-        
+        Row temp;
+
         for (int j = 0; j < matrix.size(); ++j) {
             temp.push_back(matrix[j][i]);
         }
-        
+
         new_matrix.push_back(temp);
     }
-    
+
     return new_matrix;
 }
 
-vector<vector<double>> addSplitter(vector<vector<double>> network, vector<int> splitter_inputs, vector<int> splitter_outputs) {
-    vector<double> splitter_flow;
-    for (int i = 0; i < network[0].size(); ++i) {
-        splitter_flow.push_back(0);
-    }
+Matrix addSplitter(Matrix network, vector<int> splitter_inputs, vector<int> splitter_outputs) {
+    Row splitter_flow = zeroRow(network[0].size());
+    
     for (int i = 0; i < splitter_inputs.size(); ++i) {
         splitter_flow.push_back(1.0 / splitter_outputs.size());
     }
@@ -44,7 +47,7 @@ vector<vector<double>> addSplitter(vector<vector<double>> network, vector<int> s
     }
     
     // Remove circular dependencies of the new outputs on any inputs that they lead to
-    vector<double> new_splitter_flow = splitter_flow;
+    Row new_splitter_flow = splitter_flow;
     for (int i = 0; i < splitter_outputs.size(); ++i) {
         if (splitter_outputs[i] != -1) {
             for (int j = 0; j < splitter_flow.size(); ++j) {
@@ -158,7 +161,7 @@ vector<vector<double>> addSplitter(vector<vector<double>> network, vector<int> s
     // Keep sorting rows and columns until nothing further happens (to transform into normal form)
     bool sorted = false;
     while (!sorted) {
-        vector<vector<double>> old_network = network;
+        Matrix old_network = network;
         
         sort(network.begin(), network.end());
         network = transpose(network);
@@ -187,16 +190,16 @@ vector<vector<double>> addSplitter(vector<vector<double>> network, vector<int> s
     }
     // Now permute so that the max element is in the upper left corner
     // Switch rows
-    vector<double> first_row = network[0];
-    vector<double> max_row = network[max_row_ind];
+    Row first_row = network[0];
+    Row max_row = network[max_row_ind];
     network[0] = max_row;
     network[max_row_ind] = first_row;
     // Switch columns
-    vector<double> first_col;
+    Row first_col;
     for (int i = 0; i < network[0].size(); ++i) {
         first_col.push_back(network[0][i]);
     }
-    vector<double> max_col;
+    Row max_col;
     for (int i = 0; i < network[max_col_ind].size(); ++i) {
         max_col.push_back(network[max_col_ind][i]);
     }
@@ -211,12 +214,12 @@ vector<vector<double>> addSplitter(vector<vector<double>> network, vector<int> s
 }
 
 bool existsBalancer(int input_size, int output_size, int max_num_splitters) {
-    set<vector<vector<double>>> possible_networks;
+    set<Matrix> possible_networks;
     possible_networks.insert({{1}});
     
     // Note: I assume out1 and out2 aren't both looped back to inputs; check to see if this is valid later
     for (int i = 0; i < max_num_splitters; ++i) {
-        set<vector<vector<double>>> new_possible_networks;
+        set<Matrix> new_possible_networks;
         
         // Expand on each possible network
         // Need to do this in a way so that there are no "infinite loops"
@@ -285,11 +288,11 @@ bool existsBalancer(int input_size, int output_size, int max_num_splitters) {
     }
     
     // Check if it's a splitter
-    vector<double> balanced_output;
+    Row balanced_output;
     for (int i = 0; i < input_size; ++i) {
         balanced_output.push_back(1.0 / output_size);
     }
-    vector<vector<double>> balancer;
+    Matrix balancer;
     for (int i = 0; i < output_size; ++i) {
         balancer.push_back(balanced_output);
     }
