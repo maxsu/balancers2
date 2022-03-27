@@ -10,6 +10,9 @@
 
 using namespace std;
 
+using Wiring = vector<int>;
+using Config = vector<Wiring>;
+using Configs = vector<Config>;
 
 Matrix addSplitter(Matrix network, vector<int> splitter_inputs, vector<int> splitter_outputs) {
     Row splitter_flow = zeroRow(network[0].size());
@@ -157,6 +160,26 @@ Matrix addSplitter(Matrix network, vector<int> splitter_inputs, vector<int> spli
     return network;
 }
 
+Config unwired_2_1_splitter = {{-1, -1}, {-1}};
+
+void inline wire_2_inputs_1_fixedOutput(Configs &configs, int n){
+    for (int out = -1; out < n; ++out) {
+        configs.push_back({{-1, -1}, {out, -1}});
+    }
+}
+
+void inline wire_2_fixedInputs_1_output(Configs &configs, int in1, int in2, int n){
+    for (int out1 = -1; out1 < n; ++out1) {
+        configs.push_back({{in1, in2}, {out1, -1}});
+    }
+}
+
+void inline wire_1_fixedInput_1_output(Configs &configs, int in1, int n){
+    for (int out1 = -1; out1 < n; ++out1) {
+        configs.push_back({{in1}, {out1, -1}});
+    }
+}
+
 bool existsBalancer(int input_size, int output_size, int max_num_splitters) {
     set<Matrix> possible_networks;
     possible_networks.insert({{1}});
@@ -168,30 +191,33 @@ bool existsBalancer(int input_size, int output_size, int max_num_splitters) {
         // Expand on each possible network
         // Need to do this in a way so that there are no "infinite loops"
         for (auto it = possible_networks.begin(); it != possible_networks.end(); ++it) {
-            vector<vector<vector<int>>> valid_configs;
+            vector<Config> valid_configs;
             
-            // Assume out2 is -1
-            // Add case that in1 and in2 is -1
-            valid_configs.push_back({{-1, -1}, {-1}});
-            for (int out1 = -1; out1 < (int)(*it)[0].size(); ++out1) {
-                valid_configs.push_back({{-1, -1}, {out1, -1}});
-            }
+            int n = (int)it->size();
+            int m = (int)(*it)[0].size();
+
+            // Add trivial unwired 2-1 splitter
+            valid_configs.push_back(unwired_2_1_splitter);
+
+            // Add 2-2 splitter with 1 wired output
+            wire_2_inputs_1_fixedOutput(valid_configs, m);
+            
             for (int in1 = -1; in1 < (int)it->size(); ++in1) {
-                // Case where there is no in2
+                // Cases with one wired input
                 valid_configs.push_back({{in1}, {-1}});
-                for (int out1 = -1; out1 < (int)(*it)[0].size(); ++out1) {
-                    valid_configs.push_back({{in1}, {out1, -1}});
-                }
+                wire_1_fixedInput_1_output(valid_configs, in1, m);
                 
-                for (int in2 = in1 + 1; in2 < (int)it->size(); ++in2) {
+                // Cases with two wired inputs.. 
+                for (int in2 = in1 + 1; in2 < n; ++in2) {
+                    // .. And one unwired output
                     valid_configs.push_back({{in1, in2}, {-1}});
-                    for (int out1 = -1; out1 < (int)(*it)[0].size(); ++out1) {
-                        valid_configs.push_back({{in1, in2}, {out1, -1}});
-                    }
+
+                    // .. Or one wired output
+                    wire_2_fixedInputs_1_output(valid_configs, in1, in2, m);
                 }
             }
             
-            // Check that there are no completely circular dependencies that would be added
+            // Drop circular dependencies
             for (int j = valid_configs.size() - 1; j >= 0; --j) {
                 // If there's a new input, we're fine
                 if (valid_configs[j][0][0] == -1) {
