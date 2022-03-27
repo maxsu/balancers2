@@ -4,8 +4,9 @@
 #include <set>
 #include <vector>
 
-#include "types.h"
-#include "network_tools.h"
+#include "types.hpp"
+#include "network_tools.hpp"
+#include "exists_balancer.hpp"
 
 using namespace std;
 
