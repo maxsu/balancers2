@@ -1,7 +1,8 @@
 // Tools for the Network/Matrix domain
 
 #pragma once
-#include "network_tools.cpp"
+
+#include "types.hpp"
 
 // Generate a row of zeros
 Row zeroRow(int size);

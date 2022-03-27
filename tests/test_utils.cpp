@@ -2,8 +2,10 @@
 
 #include <string>
 
-#include "../lib/output_ratios.h"
-#include "../lib/utils.h"
+#include "../lib/network_tools.hpp"
+#include "../lib/output_ratios.hpp"
+#include "../lib/utils.hpp"
+#include "test_utils.hpp"
 
 void test_outputRatio_first_column(TestNet testnet) {
   Matrix flow = outputRatios(testnet.network);

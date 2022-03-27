@@ -1,8 +1,9 @@
 // Test runner for output_ratios
 
-#include "lib/output_ratios.h"
-#include "tests/test_cases.h"
-#include "tests/test_utils.h"
+#include "lib/utils.hpp"
+#include "lib/output_ratios.hpp"
+#include "tests/test_cases.hpp"
+#include "tests/test_utils.hpp"
 
 // Load test networks, compute ratios, and report results
 int main() {

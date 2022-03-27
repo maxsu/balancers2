@@ -1,7 +1,8 @@
 // Examples of networks and their flow ratios
 
 #pragma once
-#include "test_cases.cpp"
+
+#include "../lib/types.hpp"
 
 // A 2 node trivial link
 TestNet trivialLink();

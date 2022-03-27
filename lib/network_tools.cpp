@@ -1,7 +1,8 @@
 // Tools for the Network/Matrix domain
 
-#include "types.h"
-#include "utils.h"
+#include "types.hpp"
+#include "utils.hpp"
+#include "network_tools.hpp"
 
 Row zeroRow(int size) {
   Row zero_row;
