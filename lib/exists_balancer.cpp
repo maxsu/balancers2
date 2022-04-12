@@ -73,32 +73,10 @@ Matrix addSplitter(Matrix network, vector<int> splitter_inputs, vector<int> spli
         }
     }
     
-    
     // Add new outputs
     for (int i = 0; i < splitter_outputs.size(); ++i) {
         network.push_back(splitter_flow);
     }
-    
-    // Update the inputs and outputs of this network
-    /*for (int i = 0; i < network.size(); ++i) {
-        // For each previous input node i depends on that is now an output of the splitter, add the splitter's flow
-        for (int j = 0; j < network[i].size(); ++j) {
-            // Check if j is an output node of the splitter
-            bool isOutputNode = false;
-            for (int k = 0; k < splitter_outputs.size(); ++k) {
-                if (splitter_outputs[k] == j) {
-                    isOutputNode = true;
-                }
-            }
-            
-            // If so, update the output to not depend on it any longer
-            if (isOutputNode) {
-                for (int k = 0; k < splitter_flow.size(); ++k) {
-                    network[i][k] += network[i][j] * splitter_flow[k];
-                }
-            }
-        }
-    }*/
     
     // Now trim the new unused inputs/outputs; start from the back so that erasing can work properly
     int old_network_size = network.size();
