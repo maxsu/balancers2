@@ -14,27 +14,33 @@ using Wiring = vector<int>;
 using Config = vector<Wiring>;
 using Configs = vector<Config>;
 
-Matrix addSplitter(Matrix network, vector<int> splitter_inputs, vector<int> splitter_outputs) {
-    Row splitter_flow = zeroRow(network[0].size());
+Matrix addSplitter(Matrix network, const Wiring splitter_inputs, const Wiring splitter_outputs) {
+
+    const int N = network.size();
+    const int M = network[0].size();
     
-    for (int i = 0; i < splitter_inputs.size(); ++i) {
-        splitter_flow.push_back(1.0 / splitter_outputs.size());
+    const int n = splitter_inputs.size();
+    const int m = splitter_outputs.size();
+
+    Row splitter_flow = zeroRow(M);
+    for (int i = 0; i < n; ++i) {
+        splitter_flow.push_back(1.0 / m);
     }
     
     // Find this splitter's output in terms of its input flows
-    for (int i = 0; i < splitter_inputs.size(); ++i) {
+    for (int i = 0; i < n; ++i) {
         if (splitter_inputs[i] != -1) {
-            for (int j = 0; j < network[splitter_inputs[i]].size(); ++j) {
-                splitter_flow[j] += network[splitter_inputs[i]][j] / splitter_outputs.size();
+            for (int j = 0; j < M; ++j) {
+                splitter_flow[j] += network[splitter_inputs[i]][j] / m;
             }
         }
     }
     
     // Remove circular dependencies of the new outputs on any inputs that they lead to
     Row new_splitter_flow = splitter_flow;
-    for (int i = 0; i < splitter_outputs.size(); ++i) {
+    for (int i = 0; i < m; ++i) {
         if (splitter_outputs[i] != -1) {
-            for (int j = 0; j < splitter_flow.size(); ++j) {
+            for (int j = 0; j < n + M; ++j) {
                 new_splitter_flow[j] *= 1 / (1 - splitter_flow[splitter_outputs[i]]);
             }
             
@@ -45,19 +51,17 @@ Matrix addSplitter(Matrix network, vector<int> splitter_inputs, vector<int> spli
     
     // Remove other dependencies on the input (if any) that was just removed
     // Might be wonky when there are two self-loops added at once
-    for (int i = 0; i < network.size(); ++i) {
+    for (int i = 0; i < N; ++i) {
         bool added_inputs = false;
         
-        for (int j = 0; j < splitter_outputs.size(); ++j) {
+        for (int j = 0; j < m; ++j) {
             if (splitter_outputs[j] != -1) {
-                for (int k = 0; k < network[i].size(); ++k) {
+                for (int k = 0; k < M; ++k) {
                     network[i][k] += network[i][splitter_outputs[j]] * splitter_flow[k];
                 }
                 // Add dependencies on inputs
-                int old_network_size = network[i].size();
-                for (int k = 0; k < splitter_inputs.size(); ++k) {
-                    // splitter_flow[network[i].size() + l should be the same as just 1.0 / splitter_outputs.size()
-                    network[i].push_back(network[i][splitter_outputs[j]] * splitter_flow[old_network_size + k]);
+                for (int k = 0; k < n; ++k) {
+                    network[i].push_back(network[i][splitter_outputs[j]] * splitter_flow[M + k]);
                     
                     added_inputs = true;
                 }
@@ -67,31 +71,32 @@ Matrix addSplitter(Matrix network, vector<int> splitter_inputs, vector<int> spli
         }
         
         if (!added_inputs) {
-            for (int j = 0; j < splitter_inputs.size(); ++j) {
+            for (int j = 0; j < n; ++j) {
                 network[i].push_back(0);
             }
         }
     }
     
     // Add new outputs
-    for (int i = 0; i < splitter_outputs.size(); ++i) {
+    for (int i = 0; i < m; ++i) {
         network.push_back(splitter_flow);
     }
     
     // Now trim the new unused inputs/outputs; start from the back so that erasing can work properly
-    int old_network_size = network.size();
-    for (int i = network.size() - 1; i >= 0; --i) {
+    for (int i = N + m - 1; i >= 0; --i) {
         // Erase this row if it's an output that is now used
         bool is_used = false;
         // Check if it's an output of the previous network that is now used in the splitter
-        for (int j = 0; j < splitter_inputs.size(); ++j) {
+        for (int j = 0; j < n; ++j) {
             if (splitter_inputs[j] == i) {
                 is_used = true;
             }
         }
         // Check if it's an output of the splitter that's used
-        int output_index = splitter_outputs.size() + i - old_network_size;
-        if (0 <= output_index && splitter_outputs[output_index] != -1) {
+        int output_index = i - N;
+        bool in_output_segment = output_index >= 0;
+        bool output_wired = splitter_outputs[output_index] != -1;
+        if (in_output_segment && output_wired) {
             is_used = true;
         }
         if (is_used) {
@@ -101,17 +106,19 @@ Matrix addSplitter(Matrix network, vector<int> splitter_inputs, vector<int> spli
         
         // Now trim columns (inputs)
         int old_row_size = network[i].size();
-        for (int j = network[i].size() - 1; j >= 0; --j) {
+        for (int j = old_row_size - 1; j >= 0; --j) {
             bool is_used = false;
             // Check if it's an input of the previous network that's now an output of the splitter
-            for (int k = 0; k < splitter_outputs.size(); ++k) {
+            for (int k = 0; k < m; ++k) {
                 if (splitter_outputs[k] == j) {
                     is_used = true;
                 }
             }
             // Check if it's a used input of the splitter that's used
-            int input_index = splitter_inputs.size() + j - old_row_size;
-            if (0 <= input_index && splitter_inputs[input_index] != -1) {
+            int input_index = n + j - old_row_size;
+            bool in_input_segment = 0 <= input_index;
+            bool input_wired = splitter_inputs[input_index] != -1;
+            if (in_input_segment && input_wired) {
                 is_used = true;
             }
             if (is_used) {
