@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <set>
 #include <vector>
+#include <assert.h>
 
 #include "types.hpp"
 #include "network_tools.hpp"
