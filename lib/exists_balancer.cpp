@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <set>
 #include <vector>
+#include <assert.h>
 
 #include "types.hpp"
 #include "network_tools.hpp"
@@ -13,6 +14,20 @@ using namespace std;
 using Wiring = vector<int>;
 using Config = vector<Wiring>;
 using Configs = vector<Config>;
+
+bool isRectangular(Matrix network) {
+
+    int M = network[0].size();
+    bool is_rectangular = true;
+
+    for (auto row: network) {
+        if (row.size() != M) {
+            is_rectangular = false;
+        }
+    }
+
+    return is_rectangular;
+ }
 
 Matrix addSplitter(Matrix network, const Wiring splitter_inputs, const Wiring splitter_outputs) {
 
@@ -76,6 +91,9 @@ Matrix addSplitter(Matrix network, const Wiring splitter_inputs, const Wiring sp
             }
         }
     }
+
+    assert(isRectangular(network));
+    assert(network[0].size() == M + n);
     
     // Add new outputs
     for (int i = 0; i < m; ++i) {
