@@ -4,6 +4,10 @@
 
 #include "types.hpp"
 
+//////////////////////////////
+// Matrix operations
+//////////////////////////////
+
 // Generate a row of zeros
 Row zeroRow(int size);
 
@@ -25,6 +29,10 @@ Row getColumn(Matrix matrix, int column_position);
 // Transpos a matrix
 Matrix transpose(Matrix matrix);
 
+//////////////////////////////
+// Network operations
+//////////////////////////////
+
 // Generate an empty network
 Network emptyNetwork(int size);
 
@@ -33,3 +41,10 @@ void link(Network& nodes, int source, int target);
 
 // Find a node's index in a network
 int nodeNum(Network nodes, Node* node);
+
+// network[i] is flow from inputs to i-th output
+// splitter_inputs has an entry of -1 for a new input that's not already part of the network
+// splitter_outputs has an entry of -1 for a new output
+// There must be at least one output
+// Network must have at least one input
+Matrix addSplitter(Matrix network, vector<int> splitter_inputs, vector<int> splitter_outputs);
