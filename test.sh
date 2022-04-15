@@ -21,20 +21,33 @@ function test {
   echo Done!
 
   echo Running $binary
-  $binary
+  if [ $# -gt 1 ]
+  then
+    test_to_run=$2
+    $binary $test_to_run
+  else
+    $binary
+  fi
 }
 
-# Set environment variable TEST_ONE or TEST_TWO to run just one test
-if [[ -n $TEST_ONE ]]; then
-  test test_output_ratios.cpp
-  exit
+if [ $# -gt 0 ]
+  then
+  test run_tests.cpp $1
+else
+  test run_tests.cpp
 fi
 
-if [[ -n $TEST_TWO ]]; then
-  test test_exists_balancer.cpp
-  exit
-fi 
+# Set environment variable TEST_ONE or TEST_TWO to run just one test
+#if [[ -n $TEST_ONE ]]; then
+#  test test_output_ratios.cpp
+#  exit
+#fi
+
+#if [[ -n $TEST_TWO ]]; then
+#  test test_exists_balancer.cpp
+#  exit
+#fi
 
 # Otherwise run all tests
-test test_output_ratios.cpp
-test test_exists_balancer.cpp
+#test test_output_ratios.cpp
+#test test_exists_balancer.cpp
