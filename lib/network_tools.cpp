@@ -106,34 +106,37 @@ using Wiring = vector<int>;
 using Config = vector<Wiring>;
 using Configs = vector<Config>;
 
-Matrix addSplitter(Matrix network, const Wiring splitter_inputs, const Wiring splitter_outputs) {
-
-    const int N = network.size();
-    const int M = network[0].size();
+Matrix addSplitterToFlow(Matrix flow, const Wiring splitter_inputs, const Wiring splitter_outputs) {
+    const int num_flow_outputs = flow.size(); // Previously N
+    const int num_flow_inputs = flow[0].size(); // Previously M
     
-    const int n = splitter_inputs.size();
-    const int m = splitter_outputs.size();
+    const int num_splitter_outputs = splitter_outputs.size(); // Previously m
+    const int num_splitter_inputs = splitter_inputs.size(); // Previously n
 
-    Row splitter_flow = zeroRow(M);
-    for (int i = 0; i < n; ++i) {
-        splitter_flow.push_back(1.0 / m);
+    Row splitter_flow = zeroRow(num_flow_inputs);
+    for (int i = 0; i < num_splitter_inputs; ++i) {
+        splitter_flow.push_back(1.0 / num_splitter_outputs);
     }
     
     // Find this splitter's output in terms of its input flows
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < num_splitter_inputs; ++i) {
         if (splitter_inputs[i] != -1) {
-            for (int j = 0; j < M; ++j) {
-                splitter_flow[j] += network[splitter_inputs[i]][j] / m;
+            for (int j = 0; j < num_flow_inputs; ++j) {
+                splitter_flow[j] += flow[splitter_inputs[i]][j] / num_splitter_outputs;
             }
         }
     }
     
     // Remove circular dependencies of the new outputs on any inputs that they lead to
     Row new_splitter_flow = splitter_flow;
-    for (int i = 0; i < m; ++i) {
+    for (int i = 0; i < num_splitter_outputs; ++i) {
         if (splitter_outputs[i] != -1) {
-            for (int j = 0; j < n + M; ++j) {
+            for (int j = 0; j < num_flow_inputs + num_splitter_inputs; ++j) {
                 new_splitter_flow[j] *= 1 / (1 - splitter_flow[splitter_outputs[i]]);
+                
+                if (splitter_flow[splitter_outputs[i]] == 1) {
+                    splitter_flow = {};
+                }
             }
             
             new_splitter_flow[splitter_outputs[i]] = 0;
@@ -143,78 +146,78 @@ Matrix addSplitter(Matrix network, const Wiring splitter_inputs, const Wiring sp
     
     // Remove other dependencies on the input (if any) that was just removed
     // Might be wonky when there are two self-loops added at once
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < num_flow_outputs; ++i) {
         bool added_inputs = false;
         
-        for (int j = 0; j < m; ++j) {
+        for (int j = 0; j < num_splitter_outputs; ++j) {
             if (splitter_outputs[j] != -1) {
-                for (int k = 0; k < M; ++k) {
-                    network[i][k] += network[i][splitter_outputs[j]] * splitter_flow[k];
+                for (int k = 0; k < num_flow_inputs; ++k) {
+                    flow[i][k] += flow[i][splitter_outputs[j]] * splitter_flow[k];
                 }
                 // Add dependencies on inputs
-                for (int k = 0; k < n; ++k) {
-                    network[i].push_back(network[i][splitter_outputs[j]] * splitter_flow[M + k]);
+                for (int k = 0; k < num_splitter_inputs; ++k) {
+                    flow[i].push_back(flow[i][splitter_outputs[j]] * splitter_flow[num_flow_inputs + k]);
                     
                     added_inputs = true;
                 }
                 
-                network[i][splitter_outputs[j]] = 0;
+                flow[i][splitter_outputs[j]] = 0;
             }
         }
         
         if (!added_inputs) {
-            for (int j = 0; j < n; ++j) {
-                network[i].push_back(0);
+            for (int j = 0; j < num_splitter_inputs; ++j) {
+                flow[i].push_back(0);
             }
         }
     }
     
     // Add new outputs
-    for (int i = 0; i < m; ++i) {
-        network.push_back(splitter_flow);
+    for (int i = 0; i < num_splitter_outputs; ++i) {
+        flow.push_back(splitter_flow);
     }
     
     // Now trim the new unused inputs/outputs; start from the back so that erasing can work properly
-    for (int i = N + m - 1; i >= 0; --i) {
+    for (int i = num_flow_outputs + num_splitter_outputs - 1; i >= 0; --i) {
         // Erase this row if it's an output that is now used
         bool is_used = false;
         // Check if it's an output of the previous network that is now used in the splitter
-        for (int j = 0; j < n; ++j) {
+        for (int j = 0; j < num_splitter_inputs; ++j) {
             if (splitter_inputs[j] == i) {
                 is_used = true;
             }
         }
         // Check if it's an output of the splitter that's used
-        int output_index = i - N;
+        int output_index = i - num_flow_outputs;
         bool in_output_segment = output_index >= 0;
         bool output_wired = splitter_outputs[output_index] != -1;
         if (in_output_segment && output_wired) {
             is_used = true;
         }
         if (is_used) {
-            network.erase(network.begin() + i);
+            flow.erase(flow.begin() + i);
             continue;
         }
         
         // Now trim columns (inputs)
-        int old_row_size = network[i].size();
+        int old_row_size = flow[i].size();
         for (int j = old_row_size - 1; j >= 0; --j) {
             bool is_used = false;
             // Check if it's an input of the previous network that's now an output of the splitter
-            for (int k = 0; k < m; ++k) {
+            for (int k = 0; k < num_splitter_outputs; ++k) {
                 if (splitter_outputs[k] == j) {
                     is_used = true;
                 }
             }
             // Check if it's a used input of the splitter that's used
-            int input_index = n + j - old_row_size;
+            int input_index = num_splitter_inputs + j - old_row_size;
             bool in_input_segment = 0 <= input_index;
             bool input_wired = splitter_inputs[input_index] != -1;
             if (in_input_segment && input_wired) {
                 is_used = true;
             }
             if (is_used) {
-                network[i].erase(network[i].begin() + j);
+                flow[i].erase(flow[i].begin() + j);
             }
         }
     }
@@ -222,17 +225,17 @@ Matrix addSplitter(Matrix network, const Wiring splitter_inputs, const Wiring sp
     // Keep sorting rows and columns until nothing further happens (to transform into normal form)
     bool sorted = false;
     while (!sorted) {
-        Matrix old_network = network;
+        Matrix old_flow = flow;
         
-        sort(network.begin(), network.end());
-        network = transpose(network);
-        sort(network.begin(), network.end());
-        network = transpose(network);
+        sort(flow.begin(), flow.end());
+        flow = transpose(flow);
+        sort(flow.begin(), flow.end());
+        flow = transpose(flow);
         
-        if (network == old_network) {
+        if (flow == old_flow) {
             sorted = true;
         }
     }
     
-    return network;
+    return flow;
 }

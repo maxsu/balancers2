@@ -102,7 +102,7 @@ bool existsBalancer(int input_size, int output_size, int max_num_splitters) {
             }
             
             for (int j = 0; j < valid_configs.size(); ++j) {
-                new_possible_networks.insert(addSplitter(*it, valid_configs[j][0], valid_configs[j][1]));
+                new_possible_networks.insert(addSplitterToFlow(*it, valid_configs[j][0], valid_configs[j][1]));
             }
         }
         
