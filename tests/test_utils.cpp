@@ -1,11 +1,12 @@
 // Tools to run and report tests
 
+#include "test_utils.hpp"
+
 #include <string>
 
 #include "../lib/network_tools.hpp"
 #include "../lib/output_ratios.hpp"
 #include "../lib/utils.hpp"
-#include "test_utils.hpp"
 
 void test_outputRatio_first_column(TestNet testnet) {
   Matrix flow = outputRatios(testnet.network);

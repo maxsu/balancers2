@@ -1,8 +1,9 @@
 // Tools for the Network/Matrix domain
 
+#include "network_tools.hpp"
+
 #include "types.hpp"
 #include "utils.hpp"
-#include "network_tools.hpp"
 
 Row zeroRow(int size) {
   Row zero_row;
@@ -57,22 +58,22 @@ Row getColumn(Matrix matrix, int column_position) {
 }
 
 Matrix transpose(Matrix matrix) {
-    Matrix transpose_matrix;
-    
-    int m = matrix.size();
+  Matrix transpose_matrix;
 
-    if (m == 0) {
-        return matrix;
-    }
-    
-    int n = matrix[0].size();
-    
-    for (int i = 0; i < n; ++i) {
-        Row column = getColumn(matrix, i);
-        transpose_matrix.push_back(column);
-    }
-    
-    return transpose_matrix;
+  int m = matrix.size();
+
+  if (m == 0) {
+    return matrix;
+  }
+
+  int n = matrix[0].size();
+
+  for (int i = 0; i < n; ++i) {
+    Row column = getColumn(matrix, i);
+    transpose_matrix.push_back(column);
+  }
+
+  return transpose_matrix;
 }
 
 Network emptyNetwork(int size) {

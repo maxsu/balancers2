@@ -1,10 +1,11 @@
 // compute the output of a splitter network
 
+#include "output_ratios.hpp"
+
 #include <algorithm>
 
 #include "network_tools.hpp"
 #include "types.hpp"
-#include "output_ratios.hpp"
 
 Matrix outputRatios(Network nodes) {
   int network_size = nodes.size();

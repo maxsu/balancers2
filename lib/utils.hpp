@@ -8,9 +8,7 @@
 #include <vector>
 
 // Log a string to console
-inline void log(std::string message) {
-    std::cout << message << "\n";
-}
+inline void log(std::string message) { std::cout << message << "\n"; }
 
 // Log a vector<double> to console
 inline void log(std::vector<double> row) {
@@ -22,7 +20,7 @@ inline void log(std::vector<double> row) {
     std::cout << val << ", ";
   }
   std::cout << "}"
-       << "\n";
+            << "\n";
 }
 
 // Throw exception if index is out of bounds of vector
