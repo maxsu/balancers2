@@ -120,6 +120,21 @@ inline void sortMatrix(Matrix& matrix) {
   }
 }
 
+using Wiring = vector<int>;
+
+using Config = vector<Wiring>;
+
+using Configs = vector<Config>;
+
+bool isWired(int connection) { return (connection != -1); }
+
+Wiring wiredConnections(Wiring wiring) {
+  Wiring wired;
+  std::copy_if(wiring.begin(), wiring.end(), std::back_inserter(wired),
+               isWired);
+  return wired;
+}
+
 Network emptyNetwork(int size) {
   Network nodes;
   for (int i = 0; i < size; ++i) {
@@ -146,12 +161,6 @@ int nodeNum(Network nodes, Node* node) {
   }
   throw "Node not found";
 }
-
-using Wiring = vector<int>;
-
-using Config = vector<Wiring>;
-
-using Configs = vector<Config>;
 
 Matrix addSplitterToFlow(Matrix flow, const Wiring splitter_inputs,
                          const Wiring splitter_outputs) {

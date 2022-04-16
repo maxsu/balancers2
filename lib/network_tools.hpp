@@ -54,8 +54,14 @@ using Wiring = vector<int>;
 // A Pair of wirings for a splitter's input and output
 using Config = vector<Wiring>;
 
-// A collection of wirings buildin a network
+// A collection of wirings building a network
 using Configs = vector<Config>;
+
+// Determine if a wiring value is a connected or unconnected (-1)
+bool isWired(int connection);
+
+// Filter the unwired connections from a wiring
+Wiring wiredConnections(Wiring wiring);
 
 // Generate an empty network
 Network emptyNetwork(int size);
