@@ -195,8 +195,9 @@ Matrix addSplitterToFlow(Matrix flow, const Wiring splitter_inputs,
   // Remove other dependencies on the input (if any) that was just removed
   // Might be wonky when there are two self-loops added at once
   for (int i = 0; i < num_flow_outputs; ++i) {
-    bool added_inputs = false;
-
+    for (int j = 0; j < num_splitter_inputs; ++j) {
+      flow[i].push_back(0);
+    }
     for (int j = 0; j < num_splitter_outputs; ++j) {
       if (splitter_outputs[j] != -1) {
         // Flow that splitter wires back into network
@@ -207,20 +208,13 @@ Matrix addSplitterToFlow(Matrix flow, const Wiring splitter_inputs,
         // Add dependencies on inputs
         for (int k = 0; k < num_splitter_inputs; ++k) {
           // Flow to new outputs
-          double forward_flow = splitter_flow[num_flow_inputs + k];
-          flow[i].push_back(back_flow * forward_flow);
-
-          added_inputs = true;
+          int output_index = num_flow_inputs + k;
+          double forward_flow = splitter_flow[output_index];
+          flow[i][output_index] += back_flow * forward_flow;
         }
 
         // Clear backflow
         flow[i][splitter_outputs[j]] = 0;
-      }
-    }
-
-    if (!added_inputs) {
-      for (int j = 0; j < num_splitter_inputs; ++j) {
-        flow[i].push_back(0);
       }
     }
   }
