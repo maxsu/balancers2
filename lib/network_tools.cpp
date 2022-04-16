@@ -178,8 +178,10 @@ Matrix addSplitterToFlow(Matrix flow, const Wiring splitter_inputs,
   // Find this splitter's output in terms of its input flows
   for (int i = 0; i < num_splitter_inputs; ++i) {
     if (splitter_inputs[i] != -1) {
+      // Flow to splitter along its i'th input
+      Row input_flow = flow[splitter_inputs[i]];
       for (int j = 0; j < num_flow_inputs; ++j) {
-        splitter_flow[j] += flow[splitter_inputs[i]][j] / num_splitter_outputs;
+        splitter_flow[j] += input_flow[j] / num_splitter_outputs;
       }
     }
   }
@@ -190,7 +192,9 @@ Matrix addSplitterToFlow(Matrix flow, const Wiring splitter_inputs,
   for (int i = 0; i < num_splitter_outputs; ++i) {
     if (splitter_outputs[i] != -1) {
       for (int j = 0; j < num_flow_inputs + num_splitter_inputs; ++j) {
-        new_splitter_flow[j] *= 1 / (1 - splitter_flow[splitter_outputs[i]]);
+        // Flow from splitter back into network
+        double self_flow = splitter_flow[splitter_outputs[i]];
+        new_splitter_flow[j] *= 1 / (1 - self_flow);
 
         if (splitter_flow[splitter_outputs[i]] == 1) {
           assert(1 == 0);  // Verify this branch never runs
@@ -210,17 +214,21 @@ Matrix addSplitterToFlow(Matrix flow, const Wiring splitter_inputs,
 
     for (int j = 0; j < num_splitter_outputs; ++j) {
       if (splitter_outputs[j] != -1) {
+        // Flow that splitter wires back into network
+        double back_flow = flow[i][splitter_outputs[j]];
         for (int k = 0; k < num_flow_inputs; ++k) {
-          flow[i][k] += flow[i][splitter_outputs[j]] * splitter_flow[k];
+          flow[i][k] += back_flow * splitter_flow[k];
         }
         // Add dependencies on inputs
         for (int k = 0; k < num_splitter_inputs; ++k) {
-          flow[i].push_back(flow[i][splitter_outputs[j]] *
-                            splitter_flow[num_flow_inputs + k]);
+          // Flow to new outputs
+          double forward_flow = splitter_flow[num_flow_inputs + k];
+          flow[i].push_back(back_flow * forward_flow);
 
           added_inputs = true;
         }
 
+        // Clear backflow
         flow[i][splitter_outputs[j]] = 0;
       }
     }
