@@ -5,7 +5,7 @@
 #include "types.hpp"
 
 //////////////////////////////
-// Matrix operations
+// Row operations
 //////////////////////////////
 
 // Generate a row of zeros
@@ -20,6 +20,10 @@ Row rowAdd(Row new_row, Row input_node_row);
 // Multiply a row by a double
 Row rowMultiply(Row row, double multiplier);
 
+//////////////////////////////
+// Matrix operations
+//////////////////////////////
+
 // Generate an identity matrix matrix
 Matrix identityMatrix(int size);
 
@@ -30,6 +34,9 @@ Row getColumn(Matrix matrix, int column_position);
 
 // Transpose a matrix
 Matrix transpose(Matrix matrix);
+
+// Put matrix into lexicographic normal form
+inline void sortMatrix(Matrix& matrix);
 
 //////////////////////////////
 // Network operations

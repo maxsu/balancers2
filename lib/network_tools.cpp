@@ -94,6 +94,25 @@ Matrix transpose(Matrix matrix) {
   return transpose_matrix;
 }
 
+inline void sortMatrix(Matrix& matrix) {
+  while (true) {
+    Matrix old_matrix = matrix;
+
+    // Sort rows
+    sort(matrix.begin(), matrix.end());
+
+    // Sort columns
+    matrix = transpose(matrix);
+    sort(matrix.begin(), matrix.end());
+    matrix = transpose(matrix);
+
+    // Finish when matrix is invariant
+    if (matrix == old_matrix) {
+      break;
+    }
+  }
+}
+
 Network emptyNetwork(int size) {
   Network nodes;
   for (int i = 0; i < size; ++i) {
@@ -253,21 +272,8 @@ Matrix addSplitterToFlow(Matrix flow, const Wiring splitter_inputs,
     }
   }
 
-  // Keep sorting rows and columns until nothing further happens (to transform
-  // into normal form)
-  bool sorted = false;
-  while (!sorted) {
-    Matrix old_flow = flow;
-
-    sort(flow.begin(), flow.end());
-    flow = transpose(flow);
-    sort(flow.begin(), flow.end());
-    flow = transpose(flow);
-
-    if (flow == old_flow) {
-      sorted = true;
-    }
-  }
+  // Transform flow into normal form
+  sortMatrix(flow);
 
   return flow;
 }
