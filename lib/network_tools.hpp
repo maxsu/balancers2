@@ -8,11 +8,17 @@
 // Row operations
 //////////////////////////////
 
+// Generate a row with constant values
+Row constRow(int size, double value);
+
 // Generate a row of zeros
 Row zeroRow(int size);
 
 // Generate a row with a single 1 entry
 Row oneRow(int size, int one_position);
+
+// Concatenate two rows
+Row rowConcat(Row A, Row B);
 
 // Add two rows together
 Row rowAdd(Row new_row, Row input_node_row);

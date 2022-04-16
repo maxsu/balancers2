@@ -10,19 +10,26 @@
 #include "types.hpp"
 #include "utils.hpp"
 
-Row zeroRow(int size) {
-  Row zero_row;
+Row constRow(int size, double value) {
+  Row const_row;
   for (int i = 0; i < size; ++i) {
-    zero_row.push_back(0);
+    const_row.push_back(value);
   }
-  return zero_row;
+  return const_row;
 }
+
+Row zeroRow(int size) { return constRow(size, 0); }
 
 Row oneRow(int size, int one_position) {
   Row one_row = zeroRow(size);
   vectorGuard(one_row, one_position);
   one_row[one_position] = 1;
   return one_row;
+}
+
+Row rowConcat(Row A, Row B) {
+  A.insert(A.end(), B.begin(), B.end());
+  return A;
 }
 
 Row rowAdd(Row A, Row B) {
