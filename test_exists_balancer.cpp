@@ -13,10 +13,10 @@ int main() {
     bool balancerExists = existsBalancer(4, 4, 4);
 
     if (balancerExists) {
-        cout << "Balancer Exists!";
+        std::cout << "Balancer Exists!";
     } else {
-        cout << "Balancer does not exist!";
+        std::cout << "Balancer does not exist!";
     }
     
-    cout << "\n";
+    std::cout << "\n";
 }
