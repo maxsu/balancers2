@@ -57,5 +57,5 @@ int nodeNum(Network nodes, Node* node);
 // splitter_inputs has an entry of -1 for a new input that's not already part of
 // the network. splitter_outputs has an entry of -1 for a new output There must
 // be at least one output Network must have at least one input
-Matrix addSplitter(Matrix network, Wiring splitter_inputs,
-                   Wiring splitter_outputs);
+Matrix addSplitterToFlow(Matrix network, Wiring splitter_inputs,
+                         Wiring splitter_outputs);
