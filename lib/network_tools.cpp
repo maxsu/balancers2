@@ -170,42 +170,27 @@ Matrix addSplitterToFlow(Matrix flow, const Wiring splitter_inputs,
   const int num_splitter_outputs = splitter_outputs.size();
   const int num_splitter_inputs = splitter_inputs.size();
 
-  Row splitter_flow = zeroRow(num_flow_inputs);
-  for (int i = 0; i < num_splitter_inputs; ++i) {
-    splitter_flow.push_back(1.0 / num_splitter_outputs);
-  }
+  const Wiring wired_inputs = wiredConnections(splitter_inputs);
+  const Wiring wired_outputs = wiredConnections(splitter_outputs);
+
+  const double output_fraction = 1.0 / num_splitter_outputs;
 
   // Find this splitter's output in terms of its input flows
-  for (int i = 0; i < num_splitter_inputs; ++i) {
-    if (splitter_inputs[i] != -1) {
-      // Flow to splitter along its i'th input
-      Row input_flow = flow[splitter_inputs[i]];
-      for (int j = 0; j < num_flow_inputs; ++j) {
-        splitter_flow[j] += input_flow[j] / num_splitter_outputs;
-      }
-    }
+  Row input_flow = zeroRow(num_flow_inputs);
+  for (int input : wired_inputs) {
+    input_flow = rowAdd(input_flow, flow[input]);
   }
 
-  // Remove circular dependencies of the new outputs on any inputs that they
-  // lead to
-  Row new_splitter_flow = splitter_flow;
-  for (int i = 0; i < num_splitter_outputs; ++i) {
-    if (splitter_outputs[i] != -1) {
-      for (int j = 0; j < num_flow_inputs + num_splitter_inputs; ++j) {
-        // Flow from splitter back into network
-        double self_flow = splitter_flow[splitter_outputs[i]];
-        new_splitter_flow[j] *= 1 / (1 - self_flow);
-
-        if (splitter_flow[splitter_outputs[i]] == 1) {
-          assert(1 == 0);  // Verify this branch never runs
-          splitter_flow = {};
-        }
-      }
-
-      new_splitter_flow[splitter_outputs[i]] = 0;
-    }
+  // Remove circular dependencies from new outputs to old inputs
+  double loop_correction = output_fraction;
+  for (int output : wired_outputs) {
+    loop_correction /= 1 - input_flow[output] * output_fraction;
+    input_flow[output] = 0;
   }
-  splitter_flow = new_splitter_flow;
+  assert(loop_correction != 1 / 0.0);  // Explode if self-flow is degenerate
+  input_flow = rowMultiply(input_flow, loop_correction);
+  const Row output_flow = constRow(num_splitter_inputs, loop_correction);
+  const Row splitter_flow = rowConcat(input_flow, output_flow);
 
   // Remove other dependencies on the input (if any) that was just removed
   // Might be wonky when there are two self-loops added at once
