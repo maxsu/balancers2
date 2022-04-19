@@ -1,8 +1,51 @@
-// Test cases of networks and their flow ratios
+// Test runner for output_ratios
 
 #include "../lib/network_tools.hpp"
-#include "test_cases.hpp"
+#include "../lib/output_ratios.hpp"
+#include "../lib/types.hpp"
+#include "catch2/catch.hpp"
 
+// Declare Testnets
+TestNet trivialLink();
+TestNet splitter2_1();
+TestNet splitter1_2();
+TestNet splitter2_2();
+TestNet balancer3_3();
+TestNet testnetA();
+TestNet testnetB();
+
+// Run and verify a test net
+bool test_outputRatio_first_column(TestNet testnet) {
+  Matrix flow = outputRatios(testnet.network);
+  Row ratios = getColumn(flow, 0);
+  return ratios == testnet.ratios;
+}
+
+TEST_CASE("outputRatio") {
+  SECTION("Trivial Link") {
+    REQUIRE(test_outputRatio_first_column(trivialLink()));
+  }
+  SECTION("Splitter 2-1") {
+    REQUIRE(test_outputRatio_first_column(splitter2_1()));
+  }
+  SECTION("Splitter 1-2") {
+    REQUIRE(test_outputRatio_first_column(splitter1_2()));
+  }
+  SECTION("Splitter 2-2") {
+    REQUIRE(test_outputRatio_first_column(splitter2_2()));
+  }
+  SECTION("Balancer 3-3") {
+    REQUIRE(test_outputRatio_first_column(balancer3_3()));
+  }
+  SECTION("8 node test case") {
+    REQUIRE(test_outputRatio_first_column(testnetA()));
+  }
+  SECTION("17 node test case") {
+    REQUIRE(test_outputRatio_first_column(testnetB()));
+  }
+}
+
+// Define Testnets
 TestNet trivialLink() {
   Network nodes = emptyNetwork(2);
 
