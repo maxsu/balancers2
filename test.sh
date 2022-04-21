@@ -1,40 +1,46 @@
 #!/bin/bash
-# Exit on errors
-set -o errexit
 
-# Library sources
-LIBS="lib/* tests/*" 
+# Usage:
+#   ./test.sh : build and run all tests
+# 
+#  ./test.sh <catch2 options> : pass arguments to catch2
+#   
+# Examples
+#   
+#   Test existsBalancer only
+#     ./test.sh existsBalancer
+#
+#   Show verbose output for all tests 
+#     ./test.sh --success reporter console 
+#
+# See [1] for more commandline options
+# 
+# [1] https://github.com/catchorg/Catch2/blob/v2.x/docs/command-line.md
 
-function test {
-  # Compile and run a test file
-  test_file=$1
-  binary=bin/$(basename $test_file .cpp)
+set -o errexit # Exit on errors
 
-  # Clean output
-  echo Cleaning $binary
-  rm -f $binary
+DEFAULT_TEST_OPTIONS="--success --reporter compact" # Default catch2 args
+TEST_BINARY="bin/test"                              # Test runner binary
+LIBS="lib/*.cpp tests/*.cpp"                        # Library sources
 
-  # Build test
-  echo Building $test_file
-  clang++ -std=c++17 $test_file $LIBS
-  mv a.out $binary
-  echo Done!
+# Compile tests
+echo Cleaning old tests
+rm -f $TEST_BINARY
 
-  echo Running $binary
-  $binary
-}
+echo Building tests
+clang++ -std=c++17 $LIBS
+mv a.out $TEST_BINARY
+echo Done!
 
-# Set environment variable TEST_ONE or TEST_TWO to run just one test
-if [[ -n $TEST_ONE ]]; then
-  test test_output_ratios.cpp
-  exit
+# Run tests
+echo Running $TEST_BINARY
+
+if [[ -z $@ ]]; then
+  # Run default tests
+  $TEST_BINARY $DEFAULT_TEST_OPTIONS
+
+else
+  # Run custom tests
+  $TEST_BINARY $@
+
 fi
-
-if [[ -n $TEST_TWO ]]; then
-  test test_exists_balancer.cpp
-  exit
-fi 
-
-# Otherwise run all tests
-test test_output_ratios.cpp
-test test_exists_balancer.cpp
