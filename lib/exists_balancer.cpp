@@ -12,20 +12,19 @@ using namespace std;
 
 Config unwired_2_1_splitter = {{-1, -1}, {-1}};
 
-void inline wire_2_inputs_1_fixedOutput(Configs &configs, int n) {
+void wire_2_inputs_1_fixedOutput(Configs &configs, int n) {
   for (int out = -1; out < n; ++out) {
     configs.push_back({{-1, -1}, {out, -1}});
   }
 }
 
-void inline wire_2_fixedInputs_1_output(Configs &configs, int in1, int in2,
-                                        int n) {
+void wire_2_fixedInputs_1_output(Configs &configs, int in1, int in2, int n) {
   for (int out1 = -1; out1 < n; ++out1) {
     configs.push_back({{in1, in2}, {out1, -1}});
   }
 }
 
-void inline wire_1_fixedInput_1_output(Configs &configs, int in1, int n) {
+void wire_1_fixedInput_1_output(Configs &configs, int in1, int n) {
   for (int out1 = -1; out1 < n; ++out1) {
     configs.push_back({{in1}, {out1, -1}});
   }

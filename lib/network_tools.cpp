@@ -101,7 +101,7 @@ Matrix transpose(Matrix matrix) {
   return transpose_matrix;
 }
 
-inline void sortMatrix(Matrix& matrix) {
+void sortMatrix(Matrix& matrix) {
   while (true) {
     Matrix old_matrix = matrix;
 

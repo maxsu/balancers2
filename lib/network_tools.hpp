@@ -42,7 +42,7 @@ Row getColumn(Matrix matrix, int column_position);
 Matrix transpose(Matrix matrix);
 
 // Put matrix into lexicographic normal form
-inline void sortMatrix(Matrix& matrix);
+void sortMatrix(Matrix& matrix);
 
 //////////////////////////////
 // Network operations

@@ -8,10 +8,10 @@
 #include <vector>
 
 // Log a string to console
-inline void log(std::string message) { std::cout << message << "\n"; }
+void log(std::string message) { std::cout << message << "\n"; }
 
 // Log a vector<double> to console
-inline void log(std::vector<double> row) {
+void log(std::vector<double> row) {
   // log numbers with full precision, usually 17 digits
   std::cout.precision(std::numeric_limits<double>::max_digits10);
 
@@ -25,7 +25,7 @@ inline void log(std::vector<double> row) {
 
 // Throw exception if index is out of bounds of vector
 template <class T>
-inline void vectorGuard(std::vector<T> v, int index) {
+void vectorGuard(std::vector<T> v, int index) {
   if (index < 0 || index > v.size()) {
     throw "Index out of bounds";
   }
