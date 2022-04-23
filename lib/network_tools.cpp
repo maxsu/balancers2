@@ -10,6 +10,8 @@
 #include "types.hpp"
 #include "utils.hpp"
 
+using std::vector;
+
 Row constRow(int size, double value) {
   Row const_row;
   for (int i = 0; i < size; ++i) {

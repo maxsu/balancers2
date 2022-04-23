@@ -8,7 +8,8 @@
 #include "network_tools.hpp"
 #include "types.hpp"
 
-using namespace std;
+using std::set;
+using std::vector;
 
 Config unwired_2_1_splitter = {{-1, -1}, {-1}};
 
