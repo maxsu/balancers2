@@ -28,8 +28,7 @@ echo Cleaning old tests
 rm -f $TEST_BINARY
 
 echo Building tests
-clang++ -std=c++17 $LIBS
-mv a.out $TEST_BINARY
+clang++ -std=c++17 $LIBS -o $TEST_BINARY
 echo Done!
 
 # Run tests
