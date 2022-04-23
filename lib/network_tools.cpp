@@ -10,13 +10,7 @@
 #include "types.hpp"
 #include "utils.hpp"
 
-Row constRow(int size, double value) {
-  Row const_row;
-  for (int i = 0; i < size; ++i) {
-    const_row.push_back(value);
-  }
-  return const_row;
-}
+Row constRow(const int size, const double value) { return Row(size, value); }
 
 Row zeroRow(int size) { return constRow(size, 0); }
 
