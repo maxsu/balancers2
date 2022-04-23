@@ -36,6 +36,7 @@ Matrix identityMatrix(int size);
 // Generate a matrix with identical rows
 Matrix constRowMatrix(int rows, Row base_row);
 
+// Tell whether a matrix has rows of identical length
 bool isRectangular(Matrix network);
 
 // Extract a column from a matrix
@@ -75,6 +76,10 @@ void link(Network& nodes, int source, int target);
 // Find a node's index in a network
 int nodeNum(Network nodes, Node* node);
 
+//////////////////////////////
+// Flow operations
+//////////////////////////////
+
 // Generate a balancer flow
 Matrix balancerFlow(int input_num, int output_num);
 
@@ -82,5 +87,5 @@ Matrix balancerFlow(int input_num, int output_num);
 // splitter_inputs has an entry of -1 for a new input that's not already part of
 // the network. splitter_outputs has an entry of -1 for a new output There must
 // be at least one output Network must have at least one input
-Matrix addSplitterToFlow(Matrix network, Wiring splitter_inputs,
+Matrix addSplitterToFlow(Matrix flow, Wiring splitter_inputs,
                          Wiring splitter_outputs);
