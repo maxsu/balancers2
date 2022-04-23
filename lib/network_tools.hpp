@@ -33,6 +33,9 @@ Row rowMultiply(Row row, double multiplier);
 // Generate an identity matrix matrix
 Matrix identityMatrix(int size);
 
+// Generate a matrix with identical rows
+Matrix constRowMatrix(int rows, Row base_row);
+
 bool isRectangular(Matrix network);
 
 // Extract a column from a matrix
@@ -71,6 +74,9 @@ void link(Network& nodes, int source, int target);
 
 // Find a node's index in a network
 int nodeNum(Network nodes, Node* node);
+
+// Generate a balancer flow
+Matrix balancerFlow(int input_num, int output_num);
 
 // network[i] is the flow from inputs to i-th output.
 // splitter_inputs has an entry of -1 for a new input that's not already part of

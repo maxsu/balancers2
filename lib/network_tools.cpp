@@ -53,6 +53,10 @@ Matrix identityMatrix(int size) {
   return identity_matrix;
 }
 
+Matrix constRowMatrix(const int rows, const Row base_row) {
+  return Matrix(rows, base_row);
+}
+
 bool isRectangular(Matrix network) {
   int M = network[0].size();
   bool is_rectangular = true;
@@ -154,6 +158,11 @@ int nodeNum(Network nodes, Node* node) {
     }
   }
   throw "Node not found";
+}
+
+Matrix balancerFlow(const int input_num, const int output_num) {
+  const Row base_row = constRow(input_num, 1.0 / output_num);
+  return constRowMatrix(output_num, base_row);
 }
 
 Matrix addSplitterToFlow(Matrix flow, const Wiring splitter_inputs,
