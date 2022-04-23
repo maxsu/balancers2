@@ -113,17 +113,8 @@ bool existsBalancer(int input_size, int output_size, int max_num_splitters) {
   }
 
   // Check if it's a splitter
-  Row balanced_output;
-  for (int i = 0; i < input_size; ++i) {
-    balanced_output.push_back(1.0 / output_size);
-  }
-  Matrix balancer;
-  for (int i = 0; i < output_size; ++i) {
-    balancer.push_back(balanced_output);
-  }
-
-  // it_num is for debugging purposes
-  int it_num = 0;
+  Matrix balancer = balancerFlow(input_size, output_size);
+  int it_num = 0;  // it_num is for debugging purposes
   for (auto it = possible_networks.begin(); it != possible_networks.end();
        ++it, ++it_num) {
     if (*it == balancer) {
