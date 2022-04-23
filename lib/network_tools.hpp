@@ -49,13 +49,13 @@ inline void sortMatrix(Matrix& matrix);
 //////////////////////////////
 
 // Represents a splitter's connection to an existing network
-using Wiring = vector<int>;
+using Wiring = std::vector<int>;
 
 // A Pair of wirings for a splitter's input and output
-using Config = vector<Wiring>;
+using Config = std::vector<Wiring>;
 
 // A collection of wirings building a network
-using Configs = vector<Config>;
+using Configs = std::vector<Config>;
 
 // Determine if a wiring value is a connected or unconnected (-1)
 bool isWired(int connection);
