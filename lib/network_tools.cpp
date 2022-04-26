@@ -10,13 +10,7 @@
 #include "types.hpp"
 #include "utils.hpp"
 
-Row constRow(int size, double value) {
-  Row const_row;
-  for (int i = 0; i < size; ++i) {
-    const_row.push_back(value);
-  }
-  return const_row;
-}
+Row constRow(const int size, const double value) { return Row(size, value); }
 
 Row zeroRow(int size) { return constRow(size, 0); }
 
@@ -57,6 +51,10 @@ Matrix identityMatrix(int size) {
     identity_matrix.push_back(oneRow(size, i));
   }
   return identity_matrix;
+}
+
+Matrix constRowMatrix(const int rows, const Row base_row) {
+  return Matrix(rows, base_row);
 }
 
 bool isRectangular(Matrix network) {
@@ -160,6 +158,11 @@ int nodeNum(Network nodes, Node* node) {
     }
   }
   throw "Node not found";
+}
+
+Matrix balancerFlow(const int input_num, const int output_num) {
+  const Row base_row = constRow(input_num, 1.0 / output_num);
+  return constRowMatrix(output_num, base_row);
 }
 
 Matrix addSplitterToFlow(Matrix flow, const Wiring splitter_inputs,
