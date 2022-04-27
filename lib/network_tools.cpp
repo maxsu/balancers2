@@ -118,11 +118,11 @@ void sortMatrix(Matrix& matrix) {
   }
 }
 
-using Wiring = vector<int>;
+using Wiring = std::vector<int>;
 
-using Config = vector<Wiring>;
+using Config = std::vector<Wiring>;
 
-using Configs = vector<Config>;
+using Configs = std::vector<Config>;
 
 bool isWired(int connection) { return (connection != -1); }
 
