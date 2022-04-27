@@ -7,6 +7,8 @@
 #include "network_tools.hpp"
 #include "types.hpp"
 
+using std::max;
+
 Matrix outputRatios(Network nodes) {
   int network_size = nodes.size();
 

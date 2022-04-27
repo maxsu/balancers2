@@ -3,19 +3,18 @@
 #pragma once
 #include <string>
 #include <vector>
-using namespace std;
 
 struct Node {
-  vector<Node *> inputs;
-  vector<Node *> outputs;
+  std::vector<Node *> inputs;
+  std::vector<Node *> outputs;
 };
 
-using Row = vector<double>;
-using Matrix = vector<Row>;
-using Network = vector<Node *>;
+using Row = std::vector<double>;
+using Matrix = std::vector<Row>;
+using Network = std::vector<Node *>;
 
 struct TestNet {
-  string name;
+  std::string name;
   Network network;
   Row ratios;
 };
