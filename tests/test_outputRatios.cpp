@@ -1,9 +1,9 @@
 // Test runner for output_ratios
 
-#include "../lib/network_tools.hpp"
-#include "../lib/output_ratios.hpp"
-#include "../lib/types.hpp"
 #include "catch2/catch.hpp"
+#include "network_tools.hpp"
+#include "output_ratios.hpp"
+#include "types.hpp"
 
 // Declare Testnets
 TestNet trivialLink();

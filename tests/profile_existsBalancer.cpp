@@ -1,5 +1,5 @@
-#include "../lib/exists_balancer.hpp"
 #include "catch2/catch.hpp"
+#include "exists_balancer.hpp"
 
 TEST_CASE("profile_existsBalancer", "[!hide]") {
   REQUIRE(existsBalancer(4, 4, 4));
