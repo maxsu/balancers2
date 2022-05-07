@@ -88,11 +88,11 @@ main() {
   echo Building tests
   build_tests
 
-  echo Building example
-  build_examples
-
   echo Testing
   run_tests
+
+  echo Building example
+  build_examples
 }
 
 main "$@"

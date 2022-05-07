@@ -1,7 +1,4 @@
 // Test Runner for exists_balancers
-
-#include <iostream>
-
 #include "catch2/catch.hpp"
 #include "exists_balancer.hpp"
 

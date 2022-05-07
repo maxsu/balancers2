@@ -1,172 +1,72 @@
 // Tools for the Network/Matrix domain
 
-#include "network_tools.hpp"
+#include "flow.hpp"
 
 #include <assert.h>
 
 #include <algorithm>
 
-#include "network_tools.hpp"
-#include "types.hpp"
-#include "utils.hpp"
+#include "vector_guard.hpp"
+#include "wiring.hpp"
 
-Row constRow(const int size, const double value) { return Row(size, value); }
-
-Row zeroRow(int size) { return constRow(size, 0); }
-
-Row oneRow(int size, int one_position) {
-  Row one_row = zeroRow(size);
-  vectorGuard(one_row, one_position);
-  one_row[one_position] = 1;
-  return one_row;
-}
-
-Row rowConcat(Row A, Row B) {
-  A.insert(A.end(), B.begin(), B.end());
-  return A;
-}
-
-Row rowAdd(Row A, Row B) {
-  if (A.size() != B.size()) {
-    throw "Row sizes mismatch";
-  }
-
-  Row C = zeroRow(A.size());
-  for (int i = 0; i < A.size(); i++) {
-    C[i] = A[i] + B[i];
-  }
-  return C;
-}
-
-Row rowMultiply(Row row, double multiplier) {
-  for (int i = 0; i < row.size(); ++i) {
-    row[i] *= multiplier;
-  }
-  return row;
-}
-
-Matrix identityMatrix(int size) {
-  Matrix identity_matrix;
-  for (int i = 0; i < size; ++i) {
-    identity_matrix.push_back(oneRow(size, i));
-  }
-  return identity_matrix;
-}
-
-Matrix constRowMatrix(const int rows, const Row base_row) {
-  return Matrix(rows, base_row);
-}
-
-bool isRectangular(Matrix network) {
-  int M = network[0].size();
-  bool is_rectangular = true;
-
-  for (auto row : network) {
-    if (row.size() != M) {
-      is_rectangular = false;
-    }
-  }
-
-  return is_rectangular;
-}
-
-Row getColumn(Matrix matrix, int column_position) {
-  vectorGuard(matrix[0], column_position);
-  Row column;
-  int m = matrix.size();
-  for (int j = 0; j < m; j++) {
-    column.push_back(matrix[j][column_position]);
-  }
-  return column;
-}
-
-Matrix transpose(Matrix matrix) {
-  Matrix transpose_matrix;
-
-  int m = matrix.size();
-
-  if (m == 0) {
-    return matrix;
-  }
-
-  int n = matrix[0].size();
-
-  for (int i = 0; i < n; ++i) {
-    Row column = getColumn(matrix, i);
-    transpose_matrix.push_back(column);
-  }
-
-  return transpose_matrix;
-}
-
-void sortMatrix(Matrix& matrix) {
-  while (true) {
-    Matrix old_matrix = matrix;
-
-    // Sort rows
-    sort(matrix.begin(), matrix.end());
-
-    // Sort columns
-    matrix = transpose(matrix);
-    sort(matrix.begin(), matrix.end());
-    matrix = transpose(matrix);
-
-    // Finish when matrix is invariant
-    if (matrix == old_matrix) {
-      break;
-    }
-  }
-}
-
-using Wiring = std::vector<int>;
-
-using Config = std::vector<Wiring>;
-
-using Configs = std::vector<Config>;
-
-bool isWired(int connection) { return (connection != -1); }
-
-Wiring wiredConnections(Wiring wiring) {
-  Wiring wired;
-  std::copy_if(wiring.begin(), wiring.end(), std::back_inserter(wired),
-               isWired);
-  return wired;
-}
-
-Network emptyNetwork(int size) {
-  Network nodes;
-  for (int i = 0; i < size; ++i) {
-    Node* node = new Node;
-    nodes.push_back(node);
-  }
-  return nodes;
-}
-
-void link(Network& nodes, int source, int target) {
-  vectorGuard(nodes, source);
-  vectorGuard(nodes, target);
-  Node* target_node = nodes[target];
-  Node* source_node = nodes[source];
-  source_node->outputs.push_back(target_node);
-  target_node->inputs.push_back(source_node);
-}
-
-int nodeNum(Network nodes, Node* node) {
-  for (int node_num = 0; node_num < nodes.size(); ++node_num) {
-    if (node == nodes[node_num]) {
-      return node_num;
-    }
-  }
-  throw "Node not found";
-}
+using std::max;
 
 Matrix balancerFlow(const int input_num, const int output_num) {
   const Row base_row = constRow(input_num, 1.0 / output_num);
   return constRowMatrix(output_num, base_row);
 }
 
-Matrix addSplitterToFlow(Matrix flow, const Wiring splitter_inputs,
-                         const Wiring splitter_outputs) {
+Matrix networkToFlow(Network nodes) {
+  int network_size = nodes.size();
+
+  Matrix flow = identityMatrix(network_size);
+
+  // Solve the nodes in terms of others
+  for (int i = 0; i < network_size; ++i) {
+    Node* current_node = nodes[i];
+
+    int node_inputs = current_node->inputs.size();
+    int node_outputs = current_node->outputs.size();
+
+    // Do nothing for input nodes
+    if (node_inputs == 0) {
+      continue;
+    }
+
+    // Sum input node rows
+    Row new_row = zeroRow(network_size);
+    for (auto input_node : current_node->inputs) {
+      Row input_row = flow[nodeNum(nodes, input_node)];
+      new_row = rowAdd(new_row, input_row);
+    }
+
+    // Divide by number of belt outputs, if any
+    double belt_normalizer = 1.0 / max(node_outputs, 1);
+    new_row = rowMultiply(new_row, belt_normalizer);
+
+    // Update self-dependencies on this node
+    double self_flow = 1 / (1 - new_row[i]);
+    new_row = rowMultiply(new_row, self_flow);
+    new_row[i] = 0;
+
+    // Update other nodes that flow to this one
+    for (int j = 0; j < network_size; ++j) {
+      // backflow is the share of i's flow that comes from j???
+      double backflow = flow[j][i];
+      flow[j] = rowAdd(flow[j], rowMultiply(new_row, backflow));
+      // clear back-pressure
+      flow[j][i] = 0;
+    }
+
+    // Update flow
+    flow[i] = new_row;
+  }
+
+  return flow;
+}
+
+Matrix addSplitterToFlow(Matrix flow, const Config splitter_config) {
+  const auto [splitter_inputs, splitter_outputs] = splitter_config;
   const int num_flow_outputs = flow.size();
   const int num_flow_inputs = flow[0].size();
 
