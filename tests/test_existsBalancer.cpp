@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include "../lib/exists_balancer.hpp"
 #include "catch2/catch.hpp"
+#include "exists_balancer.hpp"
 
 TEST_CASE("existsBalancer") {
   SECTION("Balancer 1-1-1 exists") { REQUIRE(existsBalancer(1, 1, 1)); }
