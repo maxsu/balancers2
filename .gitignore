@@ -1,6 +1,7 @@
-# Ignore binaries & precompiled headers
+# Ignore binaries & object files
 build/
-*.gch
+*.o
+*.opt
 
 # Ignore OS files
 .DS_Store
